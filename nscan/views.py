@@ -7,4 +7,4 @@ from django.shortcuts import get_list_or_404
 # Create your views here.
 
 def scan(request):
-    return render_to_response('nscan/index.html', context_instance = RequestContext(request))
+    return render_to_response('scan/index.html', context_instance = RequestContext(request))
