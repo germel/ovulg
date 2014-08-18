@@ -85,3 +85,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# The following stanza came from http://www.djangofoo.com/35/template_dirs-project-folder
+import os.path
+PROJECT_DIR = os.path.dirname(__file__) # this is not Django setting.
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_DIR, "templates"),
+    # here you can add another templates directory if you wish.
+)
+
+#TEMPLATE_DIRS = 'templates'
+
