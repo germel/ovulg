@@ -6,4 +6,5 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', views.scan, name='scan'),
+    url(r'^switchscan/$', views.scan, name='scan'),
 )
