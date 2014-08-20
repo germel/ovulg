@@ -1,4 +1,4 @@
-def CiscoScan(device, snmp_comm, snmp_pass):
+def CiscoScan(device, snmp_comm, snmp_pass=''):
     from pysnmp.entity.rfc3413.oneliner import cmdgen
     
     if snmp_comm:
