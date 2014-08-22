@@ -16,11 +16,9 @@ def scan(request):
             s_comm = form.cleaned_data['snmp_community']
             s_pass = form.cleaned_data['snmp_pass']
             resp = uCisco(CiscoScan(s_ip, s_comm, s_pass))
-            return HttpResponse(resp)
+            return render(request, 'answer.html', {'resp' : resp})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
     else:
-        return render_to_response('scan.html', {'form': SwitchForm()}, context_instance = RequestContext(request))
-        #return render(request, 'scan.html', {'form': ExampleForm()})
-
+        return render(request, 'scan.html', {'form': SwitchForm()})
