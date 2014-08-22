@@ -1,20 +1,11 @@
-<<<<<<< HEAD
-def CiscoScan(device, snmp_comm, snmp_pass): 
-=======
 def CiscoScan(device, snmp_comm, snmp_pass=''):
->>>>>>> 40cff458835f5f6ec9b9652bcdf6f9c44c88773d
     from pysnmp.entity.rfc3413.oneliner import cmdgen
     
     if snmp_comm:
         community = snmp_comm
     else:
         community = 'public'
-    
-    if snmp_pass:
-        password = snmp_pass
-    else:
-        password = ''
-    
+        
     cmdGen = cmdgen.CommandGenerator()
     
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.bulkCmd(
