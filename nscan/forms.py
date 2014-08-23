@@ -18,7 +18,7 @@ class SwitchForm(forms.Form):
     )
     
     snmp_community = forms.CharField(
-                                     label = 'SNMP community with CDP access',
+                                     label = 'SNMP community with read access',
                                      required = True,
                                      max_length = 64,
                                      initial = 'public',

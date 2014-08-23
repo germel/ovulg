@@ -14,19 +14,19 @@ def uCisco(snmp_response):
                    ip_ad = socket.inet_ntoa(n.asOctets())
                    ansip = str(ip_ad)
                except:
-                   ansip = "Switch has no IP adress!!!"
+                   ansip = "0.0.0.0"
     
            if '1.3.6.1.4.1.9.9.23.1.2.1.1.6' in str(o) and type(p) == pysnmp.proto.rfc1902.OctetString:
                try:
                    ansdesc = str(p)
                except:
-                   ansdesc = 'Unnamed'
+                   ansdesc = 'Switch has no name'
                 
            if '1.3.6.1.4.1.9.9.23.1.2.1.1.7' in str(q) and type(r) == pysnmp.proto.rfc1902.OctetString:
                try:
                    ansint = str(r)
                except:
-                   ansint = 'Unnamed'
+                   ansint = 'Magical connection...'
     
                ans.append((ansip, ansdesc, ansint))
     except TypeError:

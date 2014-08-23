@@ -17,6 +17,12 @@
 		<!-- Replace favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
 		<link rel="shortcut icon" href="/favicon.ico">
 		<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+   		
+   		<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/themes/smoothness/jquery-ui.css" />
+		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+
 		{# Load the tag library #}
 		{% load bootstrap3 %}
 
@@ -26,6 +32,9 @@
 
 		{# Display django.contrib.messages as Bootstrap alerts #}
 		{% bootstrap_messages %}
+		
+		{# Other templates may want to add headers too #}
+		{% block head %} {%endblock head %}
 
 
 	</head>
