@@ -31,7 +31,6 @@ def DevScan(maker, ip_add, snmp_comm='public', snmp_pass=''):
             )
         else:
             return(untangle(varBindTable, maker))
-        #return(CiscoScan(ip_add, comm, password))
 
 def CiscoScan(device, snmp_comm, snmp_pass=''): #no longer used
     from pysnmp.entity.rfc3413.oneliner import cmdgen

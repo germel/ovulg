@@ -16,8 +16,21 @@ def scan(request):
             s_ip = form.cleaned_data['switch_name']
             s_comm = form.cleaned_data['snmp_community']
             s_pass = form.cleaned_data['snmp_pass']
+            
             resp = DevScan(s_maker, s_ip, s_comm, s_pass)
-            return render(request, 'answer.html', {'resp' : resp})
+
+            try:
+                dev_list = list()
+                for dev in resp:
+                    if 'Switch has no IP adress' in dev[0]:
+                        dev_list.append('0.0.0.0')
+                    else:
+                        dev_list.append(dev[0])
+            except:
+                dev_list = 'No leaf.'
+                
+                
+            return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
