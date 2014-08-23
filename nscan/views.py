@@ -5,7 +5,7 @@ from django.shortcuts import get_list_or_404
 
 from nscan.forms import SwitchForm # The form to fill in the switch data
 from corestuff.core import DevScan
-from corestuff.untangle import uCisco
+
 # Create your views here.
 
 def scan(request):
