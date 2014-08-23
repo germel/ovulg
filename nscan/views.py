@@ -16,8 +16,6 @@ def scan(request):
             s_ip = form.cleaned_data['switch_name']
             s_comm = form.cleaned_data['snmp_community']
             s_pass = form.cleaned_data['snmp_pass']
-            #resp = uCisco(CiscoScan(s_ip, s_comm, s_pass))
-            #resp = u_resp(DevScan(s_maker, s_ip, s_comm, s_pass))
             resp = DevScan(s_maker, s_ip, s_comm, s_pass)
             return render(request, 'answer.html', {'resp' : resp})
         else:
