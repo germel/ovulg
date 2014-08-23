@@ -4,6 +4,13 @@ from crispy_forms.bootstrap import StrictButton
 from crispy_forms.layout import Layout, Fieldset, ButtonHolder, Submit
 
 class SwitchForm(forms.Form):
+    switch_make = forms.ChoiceField(
+                                  label = 'Manufacturer',
+                                  required = True,
+                                  initial = 'cisco',
+                                  choices = [('cisco', 'CISCO')]
+                                  )
+
     switch_name = forms.GenericIPAddressField(
                                   label = 'Switch IP address (v4 or v6)',
                                   required = True,
@@ -32,6 +39,7 @@ class SwitchForm(forms.Form):
         self.helper.form_action = 'switchscan/'
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
+                                    'switch_make',
                                     'switch_name',
                                     'snmp_community',
                                     'snmp_pass',

@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import get_list_or_404
 
 from nscan.forms import SwitchForm # The form to fill in the switch data
-from corestuff.core import CiscoScan
+from corestuff.core import DevScan
 from corestuff.untangle import uCisco
 # Create your views here.
 
@@ -12,10 +12,13 @@ def scan(request):
     if request.method == 'POST':
         form = SwitchForm(request.POST)
         if form.is_valid():
+            s_maker = form.cleaned_data['switch_make']
             s_ip = form.cleaned_data['switch_name']
             s_comm = form.cleaned_data['snmp_community']
             s_pass = form.cleaned_data['snmp_pass']
-            resp = uCisco(CiscoScan(s_ip, s_comm, s_pass))
+            #resp = uCisco(CiscoScan(s_ip, s_comm, s_pass))
+            #resp = u_resp(DevScan(s_maker, s_ip, s_comm, s_pass))
+            resp = DevScan(s_maker, s_ip, s_comm, s_pass)
             return render(request, 'answer.html', {'resp' : resp})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')

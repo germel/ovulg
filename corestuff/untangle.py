@@ -30,5 +30,9 @@ def uCisco(snmp_response):
     
                ans.append((ansip, ansdesc, ansint))
     except TypeError:
-        ans.append(('Non iterable object, something went bad: ' + str(snmp_response)))
+        ans.append(('Something went bad: ' + str(snmp_response)))
     return(ans)
+
+def untangle(snmp_response, maker='cisco'):
+    if maker == 'cisco':
+        return(uCisco(snmp_response))
