@@ -36,7 +36,7 @@ class SwitchForm(forms.Form):
         self.helper.label_class = 'col-lg-3'
         self.helper.field_class = 'col-lg-8'
         self.helper.form_method = 'post'
-        self.helper.form_action = 'switchscan/'
+        self.helper.form_action = '/switchscan/'
         self.helper.add_input(Submit('submit', 'Submit'))
         self.helper.layout = Layout(
                                     'switch_make',

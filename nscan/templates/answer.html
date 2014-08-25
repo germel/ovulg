@@ -4,12 +4,16 @@
 {% block body %}
 
 <div class="col-md-8">
+	<h2>CDP table for device {{ dev_ip }}</h2>
 	<table class="table table-striped table-condensed"><tbody>
+		<tr><th>Device IP Address</th><th>Device Name</th><th>Local Interface</th><th>Remote Interface</th></tr>
 		{% for item in resp %}
-			<tr class="{% cycle 'white' 'grey'%}"><td>{{ item.0 }}</td><td>{{ item.1}}</td><td>{{ item.2 }}</td></tr>
+			<tr class="{% cycle 'white' 'grey'%}"><td>{{ item.0 }}</td><td>{{ item.1}}</td><td>{{ item.2 }}</td><td>{{ item.3 }}</td></tr>
 		{% endfor %}
 	</tbody></table>
 </div>
+
+<a href="/switchscan/recursive-scan">Search recurseively</a></p>
 
 <div class="col-md-8">
 	Device List:<br>

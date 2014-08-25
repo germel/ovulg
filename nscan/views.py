@@ -17,8 +17,9 @@ def scan(request):
             s_comm = form.cleaned_data['snmp_community']
             s_pass = form.cleaned_data['snmp_pass']
             
-            resp = DevScan(s_maker, s_ip, s_comm, s_pass)
+            resp = DevScan(s_ip, s_comm, s_pass, s_maker)
 
+            # Create a list of the neighboring devices' IPs
             try:
                 dev_list = list()
                 for dev in resp:
@@ -28,9 +29,10 @@ def scan(request):
                         dev_list.append(dev[0])
             except:
                 dev_list = 'No leaf.'
-                
-                
-            return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list})
+
+            request.session['adj_devices'] = dev_list
+            request.session['full_list'] = resp
+            return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
@@ -48,6 +50,18 @@ def scan(request):
                 .attr("width", 200);
             </script>'''
         return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
+
+def rec_search(request): # Recursive search in the results of the first pass
+    if request.session.get('adj_devices'):
+        dev_list = request.session.get('adj_devices')
+        resp = request.session.get('full_list')
+        for s_ip in dev_list:
+            resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)        
+    else:
+        return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
+    #return HttpResponse(request.session.get('full_list'))
+    return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
+
 
 def myjson(request):
     import corestuff.myjson

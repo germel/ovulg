@@ -106,3 +106,7 @@ TEMPLATE_DIRS = (
 # django-crispy-forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
+# Configure some session related variables
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'
+SESSION_FILE_PATH = '/tmp'
+

@@ -10,5 +10,5 @@ urlpatterns = patterns('',
 
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'nscan.views.scan'),
-    url(r'^switchscan/$', include('nscan.urls', namespace='nscan')),
+    url(r'^switchscan/', include('nscan.urls', namespace='nscan')),
 )
