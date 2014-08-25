@@ -55,16 +55,21 @@ def rec_search(request): # Recursive search in the results of the first pass
     if request.session.get('adj_devices'):
         dev_list = request.session.get('adj_devices')
         resp = request.session.get('full_list')
+        # Create a list to put in the results from each device.
+        devices = resp
         for s_ip in dev_list:
             if s_ip != '0.0.0.0':
                 try:
-                    resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)
+                    device = [('Device IP Address', 'Device Name', 'Local Interface', 'Remote interface')]
+                    device = device + DevScan(s_ip)
+                    devices = devices + device
+                    #resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)
                 except:
                     resp = resp + [('Device', s_ip, 'failed', 'miserably')]
     else:
         return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
-    #return HttpResponse(request.session.get('full_list'))
-    return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
+    return HttpResponse(devices)
+    #return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
 
 
 def myjson(request):
