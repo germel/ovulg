@@ -1,10 +1,8 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import patterns, url
 from nscan import views
 
-from django.contrib import admin
-admin.autodiscover()
-
 urlpatterns = patterns('',
+    url(r'^my/$', views.myjson, name='myjson'),
     url(r'^$', views.scan, name='scan'),
-    url(r'^switchscan/$', views.scan, name='scan'),
+    #url(r'^switchscan/$', views.scan, name='scan'),
 )

@@ -9,7 +9,6 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
-    #url(r'^(/)?$', include('nscan.urls', namespace='nscan')),
     url(r'^$', 'nscan.views.scan'),
     url(r'^switchscan/$', include('nscan.urls', namespace='nscan')),
 )

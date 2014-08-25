@@ -35,7 +35,8 @@ def scan(request):
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
     else:
-        x='''<script type="text/javascript>
+        # x is a test for d3js and can be discarded.
+        x='''<script type="text/javascript> 
             var rectDemo = d3.select("#rect-demo")
                 .append("svg:svg")
                 .attr("width", 400)
@@ -47,3 +48,7 @@ def scan(request):
                 .attr("width", 200);
             </script>'''
         return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
+
+def myjson(request):
+    import corestuff.myjson
+    return HttpResponse(data)
