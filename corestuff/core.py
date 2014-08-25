@@ -67,7 +67,7 @@ def uCisco(snmp_response, oids):
                     except:
                         ansdesc = 'Switch has no name'
                 else:
-                    ansdesc = 'Someerror'
+                    ansdesc = 'No info'
                 
                 if oids['nei_if'] in str(q) and type(r) == pysnmp.proto.rfc1902.OctetString:
                     try:
@@ -75,7 +75,7 @@ def uCisco(snmp_response, oids):
                     except:
                         ansnint = 'Magical remote interface...'
                 else:
-                    ansnint = 'Someerror'
+                    ansnint = 'No info'
 
                 if oids['local_if'] in str(s) and type(t) == pysnmp.proto.rfc1902.OctetString:
                     try:
@@ -83,7 +83,7 @@ def uCisco(snmp_response, oids):
                     except:
                         anslint = 'Magical local interface...'
                 else:
-                    anslint = 'Someerror'
+                    anslint = 'No info'
 
                 ans.append((ansip, ansdesc, anslint, ansnint))
 
