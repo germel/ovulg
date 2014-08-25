@@ -56,7 +56,11 @@ def rec_search(request): # Recursive search in the results of the first pass
         dev_list = request.session.get('adj_devices')
         resp = request.session.get('full_list')
         for s_ip in dev_list:
-            resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)        
+            if s_ip != '0.0.0.0':
+                try:
+                    resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)
+                except:
+                    resp = resp + [('Device', s_ip, 'failed', 'miserably')]
     else:
         return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
     #return HttpResponse(request.session.get('full_list'))
