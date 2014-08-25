@@ -30,6 +30,9 @@ def scan(request):
             except:
                 dev_list = 'No leaf.'
 
+            # Put a header for the table in the list
+            resp.insert(0, ['Device IP Address', 'Device Name', 'Local Interface', 'Remote interface'])
+            resp.insert(0, [s_ip, None, None, None])
             request.session['adj_devices'] = dev_list
             request.session['full_list'] = resp
             return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
@@ -56,20 +59,21 @@ def rec_search(request): # Recursive search in the results of the first pass
         dev_list = request.session.get('adj_devices')
         resp = request.session.get('full_list')
         # Create a list to put in the results from each device.
-        devices = resp
+        devices = list()
         for s_ip in dev_list:
             if s_ip != '0.0.0.0':
                 try:
-                    device = [('Device IP Address', 'Device Name', 'Local Interface', 'Remote interface')]
-                    device = device + DevScan(s_ip)
-                    devices = devices + device
+                    device = [[s_ip, None, None, None ]]
+                    device.append(['Device IP Address', 'Device Name', 'Local Interface', 'Remote interface'])
+                    device.append(DevScan(s_ip))
+                    devices.append(device)
                     #resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)
                 except:
                     resp = resp + [('Device', s_ip, 'failed', 'miserably')]
     else:
         return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
-    return HttpResponse(devices)
-    #return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
+    #return HttpResponse(devices)
+    return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip, 'devices': devices})
 
 
 def myjson(request):
