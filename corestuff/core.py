@@ -30,7 +30,7 @@ def DevScan(ip_add, snmp_comm='public', snmp_pass='', maker='cisco'):
     # Check for errors and print out results
     if errorIndication:
         #return(errorIndication)
-        errormessage = errorIndication + ' at device ' + ip_add
+        errormessage = 'Error at device ' + ip_add
     else:
         if errorStatus:
             #return(
