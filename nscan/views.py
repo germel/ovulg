@@ -35,6 +35,7 @@ def scan(request):
             resp.insert(0, [s_ip, None, None, None])
             request.session['adj_devices'] = dev_list
             request.session['full_list'] = resp
+            request.session.set_expiry(1800)
             return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
