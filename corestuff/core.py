@@ -29,15 +29,17 @@ def DevScan(ip_add, snmp_comm='public', snmp_pass='', maker='cisco'):
     
     # Check for errors and print out results
     if errorIndication:
-        return(errorIndication)
+        #return(errorIndication)
+        errormessage = errorIndication + ' at device ' + ip_add
     else:
         if errorStatus:
-            return(
-                print('%s at %s' % (
-                errorStatus.prettyPrint(),
-                errorIndex and varBinds[int(errorIndex)-1] or '?')
-                )
-            )
+            #return(
+            #    print('%s at %s' % (
+            #    errorStatus.prettyPrint(),
+            #    errorIndex and varBinds[int(errorIndex)-1] or '?')
+            #    )
+            #)
+            return([(errorStatus, ' at', 'device ', ip_add)])
         else:
             #return(varBindTable)
             return(untangle(varBindTable, oids, maker))
