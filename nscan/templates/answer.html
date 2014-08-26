@@ -1,25 +1,15 @@
 {% extends "base.html" %}
 
-
 {% block body %}
 
-<div class="col-md-8">
-	<h2>CDP table for device {{ resp.0.0 }}</h2>
-	<table class="table table-striped table-condensed"><tbody>
-		<tr><th>{{ resp.1.0 }}</th><th>{{ resp.1.1 }}</th><th>{{ resp.1.2 }}</th><th>{{ resp.1.3 }}</th></tr>
-		{% for item in resp|slice:"2:" %}
-			<tr class="{% cycle 'white' 'grey'%}"><td>{{ item.0 }}</td><td>{{ item.1}}</td><td>{{ item.2 }}</td><td>{{ item.3 }}</td></tr>
-		{% endfor %}
-	</tbody></table>
-</div>
-
-<a href="/switchscan/recursive-scan">Search recurseively</a></p>
+<a href="/switchscan/recursive-scan">Search recursively</a>
 
 {% for dev in devices %}
 	<div class="col-md-8">
 		<h2>CDP table for device {{ dev.0.0 }}</h2>
 		<table class="table table-striped table-condensed"><tbody>
 			<tr><th>{{ dev.1.0 }}</th><th>{{ dev.1.1 }}</th><th>{{ dev.1.2 }}</th><th>{{ dev.1.3 }}</th></tr>
+			{# for item in dev|slice:"2:" #}
 			{% for item in dev.2 %}
 				<tr class="{% cycle 'white' 'grey'%}"><td>{{ item.0 }}</td><td>{{ item.1}}</td><td>{{ item.2 }}</td><td>{{ item.3 }}</td></tr>
 			{% endfor %}
@@ -37,11 +27,15 @@
 
 {% for y in devices %}
 	<div class="col-md-8">
-		{% for x in y.0 %}
+		{% for x in y %}
 			<br /><br />{{ x }}
 		{% endfor %}
 	</div>
 {% endfor %}
+
+<div class="col-md-10">
+{{devices}}
+</div>
 {% endcomment %}
 
 {% endblock body %}

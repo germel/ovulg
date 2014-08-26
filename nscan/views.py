@@ -17,16 +17,18 @@ def scan(request):
             s_comm = form.cleaned_data['snmp_community']
             s_pass = form.cleaned_data['snmp_pass']
             
-            resp = DevScan(s_ip, s_comm, s_pass, s_maker)
+            resp = [DevScan(s_ip, s_comm, s_pass, s_maker)]
 
-            # Create a list of the neighboring devices' IPs
+            # Create a list of the neighboring devices' IPs (dev_list)
+            # resp[] as of now has just one member, so it's resp[0]
             try:
                 dev_list = list()
-                for dev in resp:
-                    if 'Switch has no IP adress' in dev[0]:
-                        dev_list.append('0.0.0.0')
-                    else:
-                        dev_list.append(dev[0])
+                if len(resp) > 1:
+                    for dev in resp[0]:
+                        if 'Switch has no IP adress' in dev[0]:
+                            dev_list.append('0.0.0.0')
+                        else:
+                            dev_list.append(dev[0])
             except:
                 dev_list = 'No leaf.'
 
@@ -36,7 +38,8 @@ def scan(request):
             request.session['adj_devices'] = dev_list
             request.session['full_list'] = resp
             request.session.set_expiry(1800)
-            return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip})
+            # answer.html expects a triple nested list of lists, so resp becomes [resp]
+            return render(request, 'answer.html', {'devices' : [resp], 'dev_list': dev_list, 'dev_ip': s_ip})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
@@ -58,23 +61,25 @@ def scan(request):
 def rec_search(request): # Recursive search in the results of the first pass
     if request.session.get('adj_devices'):
         dev_list = request.session.get('adj_devices')
-        resp = request.session.get('full_list')
-        # Create a list to put in the results from each device.
-        devices = list()
+        resp = [request.session.get('full_list')]
+        #devices = list()
         for s_ip in dev_list:
             if s_ip != '0.0.0.0':
                 try:
+                    # device[0] -> Device IP address list
+                    # device[1] -> Table heading list
+                    # device[2] -> List of DevScan() results 
                     device = [[s_ip, None, None, None ]]
                     device.append(['Device IP Address', 'Device Name', 'Local Interface', 'Remote interface'])
                     device.append(DevScan(s_ip))
-                    devices.append(device)
-                    #resp = resp + [('Device', 'with', 'IP', s_ip)] + DevScan(s_ip)
+                    resp.append(device)
                 except:
-                    resp = resp + [('Device', s_ip, 'failed', 'miserably')]
+                    resp.append([('Device', s_ip, 'failed', 'miserably')])
     else:
         return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
     #return HttpResponse(devices)
-    return render(request, 'answer.html', {'resp' : resp, 'dev_list': dev_list, 'dev_ip': s_ip, 'devices': devices})
+    request.session['full_list'] = resp
+    return render(request, 'answer.html', {'dev_list': dev_list, 'devices': resp})
 
 
 def myjson(request):
