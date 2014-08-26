@@ -23,7 +23,7 @@ def scan(request):
             # resp[] as of now has just one member, so it's resp[0]
             try:
                 dev_list = list()
-                if len(resp) > 1:
+                if len(resp[0]) > 1:
                     for dev in resp[0]:
                         if 'Switch has no IP adress' in dev[0]:
                             dev_list.append('0.0.0.0')
@@ -76,9 +76,9 @@ def rec_search(request): # Recursive search in the results of the first pass
                 except:
                     resp.append([('Device', s_ip, 'failed', 'miserably')])
     else:
-        return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
+        return render(request, 'scan.html', {'form': SwitchForm()})
     #return HttpResponse(devices)
-    request.session['full_list'] = resp
+    #request.session['full_list'] = resp
     return render(request, 'answer.html', {'dev_list': dev_list, 'devices': resp})
 
 
