@@ -2,6 +2,7 @@ from django.template import RequestContext, Context, loader
 from django.shortcuts import render_to_response, render, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.shortcuts import get_list_or_404
+from django.core import serializers
 
 from nscan.forms import SwitchForm # The form to fill in the switch data
 from corestuff.core import DevScan
@@ -22,7 +23,8 @@ def scan(request):
             # Create a list of the neighboring devices' IPs (dev_list)
             # resp[] as of now has just one member, so it's resp[0]
             try:
-                dev_list = list()
+                if not dev_list:
+                    dev_list = list()
                 if len(resp[0]) > 1:
                     for dev in resp[0]:
                         if 'Switch has no IP adress' in dev[0]:
@@ -39,30 +41,17 @@ def scan(request):
             request.session['full_list'] = resp
             request.session.set_expiry(1800)
             # answer.html expects a triple nested list of lists, so resp becomes [resp]
-            return render(request, 'answer.html', {'devices' : [resp], 'dev_list': dev_list, 'dev_ip': s_ip})
+            return render(request, 'answer.html', {'devices' : [resp], 'dev_list': dev_list})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
     else:
-        # x is a test for d3js and can be discarded.
-        x='''<script type="text/javascript> 
-            var rectDemo = d3.select("#rect-demo")
-                .append("svg:svg")
-                .attr("width", 400)
-                .attr("height", 300);
-            rectDemo.append("svg:rect")
-                .attr("x", 100)
-                .attr("y", 100)
-                .attr("height", 100)
-                .attr("width", 200);
-            </script>'''
-        return render(request, 'scan.html', {'form': SwitchForm(), 'x': x})
+        return render(request, 'scan.html', {'form': SwitchForm()})
 
 def rec_search(request): # Recursive search in the results of the first pass
     if request.session.get('adj_devices'):
         dev_list = request.session.get('adj_devices')
         resp = [request.session.get('full_list')]
-        #devices = list()
         for s_ip in dev_list:
             if s_ip != '0.0.0.0':
                 try:
@@ -78,9 +67,29 @@ def rec_search(request): # Recursive search in the results of the first pass
     else:
         return render(request, 'scan.html', {'form': SwitchForm()})
     #return HttpResponse(devices)
-    #request.session['full_list'] = resp
+    request.session['full_list'] = resp
     return render(request, 'answer.html', {'dev_list': dev_list, 'devices': resp})
 
+def mapify(request):
+    data = request.session.get('full_list')
+
+    #jsondata = serializers.serialize("xml", data)
+    jsondata = data
+    # x is a test for d3js and can be discarded.
+    x='''<script type="text/javascript"> 
+        var rectDemo = d3.select("#rect-demo")
+            .append("svg:svg")
+            .attr("width", 400)
+            .attr("height", 300);
+        rectDemo.append("svg:rect")
+            .attr("x", 100)
+            .attr("y", 100)
+            .attr("height", 100)
+            .attr("width", 200);
+        </script>'''
+
+    #return HttpResponse(data)
+    return render(request, 'mapify.html', {'jsondata': jsondata})
 
 def myjson(request):
     import corestuff.myjson

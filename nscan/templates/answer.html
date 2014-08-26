@@ -2,7 +2,9 @@
 
 {% block body %}
 
-<a href="/switchscan/recursive-scan">Search recursively</a>
+{# <a href="/switchscan/recursive-scan">Search recursively</a><br /> #}
+<a href="{% url 'nscan:rec_search' %}">Search recursively</a><br />
+<a href="{% url 'nscan:mapify' %}">Make map</a>
 
 {% for dev in devices %}
 	<div class="col-md-8">
