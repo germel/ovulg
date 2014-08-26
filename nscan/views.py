@@ -23,8 +23,11 @@ def scan(request):
             # Create a list of the neighboring devices' IPs (dev_list)
             # resp[] as of now has just one member, so it's resp[0]
             try:
-                if not dev_list:
+                try:
+                    dev_list
+                except:
                     dev_list = list()
+                a = resp[0]
                 if len(resp[0]) > 1:
                     for dev in resp[0]:
                         if 'Switch has no IP adress' in dev[0]:
@@ -71,10 +74,26 @@ def rec_search(request): # Recursive search in the results of the first pass
     return render(request, 'answer.html', {'dev_list': dev_list, 'devices': resp})
 
 def mapify(request):
-    data = request.session.get('full_list')
+    try:
+        data = request.session.get('full_list')
+    except:
+        return render(request, 'mapify.html', {'jsondata': 'we fucked up, mate, first line'})
 
-    #jsondata = serializers.serialize("xml", data)
-    jsondata = data
+    dev = '''{ \n'''
+
+    try:
+        for i in data:
+            dev = i
+            dev += '"device": { ' + str(i[2]) + ' }\n'
+            for j in i[2]:
+                dev += '"device": {' + str(j) + ' }\n'
+    except:
+        a = 'The error is... ' + str(data[0])
+        return render(request, 'mapify.html', {'jsondata': a})
+
+    dev += '\n}'
+
+    jsondata = dev
     # x is a test for d3js and can be discarded.
     x='''<script type="text/javascript"> 
         var rectDemo = d3.select("#rect-demo")
@@ -89,7 +108,11 @@ def mapify(request):
         </script>'''
 
     #return HttpResponse(data)
-    return render(request, 'mapify.html', {'jsondata': jsondata})
+    return render(request, 'mapify.html', {'jsondata': jsondata, 'x': x})
+
+    dev = request.session.get('full_list')
+    dev = str(dev) + 'hello'
+    return render(request, 'mapify.html', {'jsondata': 'we fucked up, mate'})
 
 def myjson(request):
     import corestuff.myjson
