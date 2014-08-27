@@ -6,6 +6,7 @@ from django.core import serializers
 
 from nscan.forms import SwitchForm # The form to fill in the switch data
 from corestuff.core import DevScan
+import socket # jsonify must be able to test a field
 
 # Create your views here.
 
@@ -41,7 +42,7 @@ def scan(request):
             resp.insert(0, ['Device IP Address', 'Device Name', 'Local Interface', 'Remote interface'])
             resp.insert(0, [s_ip, None, None, None])
             request.session['adj_devices'] = dev_list
-            request.session['full_list'] = resp
+            request.session['full_list'] = [resp]
             request.session.set_expiry(1800)
             # answer.html expects a triple nested list of lists, so resp becomes [resp]
             return render(request, 'answer.html', {'devices' : [resp], 'dev_list': dev_list})
@@ -54,7 +55,7 @@ def scan(request):
 def rec_search(request): # Recursive search in the results of the first pass
     if request.session.get('adj_devices'):
         dev_list = request.session.get('adj_devices')
-        resp = [request.session.get('full_list')]
+        resp = request.session.get('full_list')
         for s_ip in dev_list:
             if s_ip != '0.0.0.0':
                 try:
@@ -76,24 +77,23 @@ def rec_search(request): # Recursive search in the results of the first pass
 def mapify(request):
     try:
         data = request.session.get('full_list')
+        try:
+            for i in data:
+                for j in i:
+                    if j[1] == None and j[3] == None:
+                        j[0] = 'device'
+                    elif j[0] == 'Device IP Address' and j[3] == 'Remote interface':
+                        j[0] = 'device_ip'
+                        j[1] = 'device_name'
+                        j[2] = 'local_if'
+                        j[3] = 'remote_if'
+                jsondata = jsonify(data)
+        except:
+            #jsondata = 'We fucked up, mate...'
+            jsondata = sys.exc_info()[0]
     except:
-        return render(request, 'mapify.html', {'jsondata': 'we fucked up, mate, first line'})
+        return render(request, 'mapify.html', {'jsondata': jsondata})
 
-    dev = '''{ \n'''
-
-    try:
-        for i in data:
-            dev = i
-            dev += '"device": { ' + str(i[2]) + ' }\n'
-            for j in i[2]:
-                dev += '"device": {' + str(j) + ' }\n'
-    except:
-        a = 'The error is... ' + str(data[0])
-        return render(request, 'mapify.html', {'jsondata': a})
-
-    dev += '\n}'
-
-    jsondata = dev
     # x is a test for d3js and can be discarded.
     x='''<script type="text/javascript"> 
         var rectDemo = d3.select("#rect-demo")
@@ -107,13 +107,37 @@ def mapify(request):
             .attr("width", 200);
         </script>'''
 
-    #return HttpResponse(data)
-    return render(request, 'mapify.html', {'jsondata': jsondata, 'x': x})
-
-    dev = request.session.get('full_list')
-    dev = str(dev) + 'hello'
-    return render(request, 'mapify.html', {'jsondata': 'we fucked up, mate'})
+    return render(request, 'mapify.html', {'jsondata': jsondata})
 
 def myjson(request):
     import corestuff.myjson
     return HttpResponse(data)
+
+def jsonify(data):
+    dev = '{ '
+
+    try:
+        for i in data:
+            for j in i:
+                if len(j) == 4 and j[0] == 'device':
+                    dev += '"device" : { '
+                elif len(j) == 4 and j[0] == 'device_ip':
+                    name1, name2, name3, name4 = j
+                elif len(j) > 1:
+                    try:
+                        temp = socket.inet_aton(j[0])
+                        for k in j:
+                            dev += '"' + name1 + '" : "' + k[0] + '" } '
+                    except:
+                        pass
+    except:
+        jdata = 'The error is... ' + str(data[0])
+    
+    dev += ' }'
+    
+    jdata = dev
+
+    #return HttpResponse(data)
+    #return render(request, 'mapify.html', {'jdata': jsondata, 'x': x})
+
+    return jdata
