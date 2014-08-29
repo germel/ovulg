@@ -6,13 +6,17 @@
 <a href="{% url 'nscan:rec_search' %}">Search recursively</a><br />
 <a href="{% url 'nscan:mapify' %}">Make map</a>
 
-{% for dev in devices %}
+{#% for dev in devices %#}
+{% for dev in devscan %}
 	<div class="col-md-8">
-		<h2>CDP table for device {{ dev.0.0 }}</h2>
+		<h2>CDP table for device {{ dev.0 }}</h2>
 		<table class="table table-striped table-condensed"><tbody>
+			{% comment %}
 			<tr><th>{{ dev.1.0 }}</th><th>{{ dev.1.1 }}</th><th>{{ dev.1.2 }}</th><th>{{ dev.1.3 }}</th></tr>
+			{% endcomment %}
+			<tr><th>Device IP Address</th><th>Device Name</th><th>Local Interface</th><th>Remote interface</th></tr>
 			{# for item in dev|slice:"2:" #}
-			{% for item in dev.2 %}
+			{% for item in dev.1 %}
 				<tr class="{% cycle 'white' 'grey'%}"><td>{{ item.0 }}</td><td>{{ item.1}}</td><td>{{ item.2 }}</td><td>{{ item.3 }}</td></tr>
 			{% endfor %}
 		</tbody></table>
@@ -23,21 +27,24 @@
 <div class="col-md-8">
 	Device List:<br>
 	{% for x in dev_list %}
-		{{ x }}<br>
+		{% autoescape off %}{{ x }}{% endautoescape %}<br>
 	{% endfor %}
 </div>
 
 {% for y in devices %}
 	<div class="col-md-8">
 		{% for x in y %}
-			<br /><br />{{ x }}
+			<br /><br />{% autoescape off %}{{ x }}{% endautoescape %}
 		{% endfor %}
 	</div>
 {% endfor %}
+{% endcomment %}
 
 <div class="col-md-10">
-{{devices}}
+	<h2>DevScans list</h2>
+	{% for z in devscan %}
+		{% autoescape off %}{{z}}{% endautoescape %} <br/><br/>
+	{% endfor %}
 </div>
-{% endcomment %}
 
 {% endblock body %}

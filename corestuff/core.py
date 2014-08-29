@@ -85,7 +85,7 @@ def uCisco(snmp_response, oids):
                 else:
                     anslint = 'No info'
 
-                ans.append((ansip, ansdesc, anslint, ansnint))
+                ans.append([ansip, ansdesc, anslint, ansnint])
 
     except TypeError:
         ans.append(('Something went bad: ' + str(snmp_response)))

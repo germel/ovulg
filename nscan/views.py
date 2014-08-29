@@ -24,11 +24,8 @@ def scan(request):
             # Create a list of the neighboring devices' IPs (dev_list)
             # resp[] as of now has just one member, so it's resp[0]
             try:
-                try:
-                    dev_list
-                except:
-                    dev_list = list()
-                a = resp[0]
+                dev_list = list()
+                #a = resp[0]
                 if len(resp[0]) > 1:
                     for dev in resp[0]:
                         if 'Switch has no IP adress' in dev[0]:
@@ -39,13 +36,14 @@ def scan(request):
                 dev_list = 'No leaf.'
 
             # Put a header for the table in the list
-            resp.insert(0, ['Device IP Address', 'Device Name', 'Local Interface', 'Remote interface'])
-            resp.insert(0, [s_ip, None, None, None])
+            full_list = list()
+            full_list.append(list([s_ip]) + list(resp)) # THE session variable to keep
+            request.session['full_list'] = full_list
             request.session['adj_devices'] = dev_list
-            request.session['full_list'] = [resp]
-            request.session.set_expiry(1800)
+            request.session['DevScanParameters'] = [s_ip, s_comm, s_pass, s_maker]
+            request.session.set_expiry(3600)
             # answer.html expects a triple nested list of lists, so resp becomes [resp]
-            return render(request, 'answer.html', {'devices' : [resp], 'dev_list': dev_list})
+            return render(request, 'answer.html', {'dev_list': dev_list, 'devscan': full_list})
         else:
             return HttpResponse('Go back and fill that form like a good girl...')
         pass
@@ -55,28 +53,31 @@ def scan(request):
 def rec_search(request): # Recursive search in the results of the first pass
     if request.session.get('adj_devices'):
         dev_list = request.session.get('adj_devices')
-        resp = request.session.get('full_list')
+        devscan_parameters = request.session.get('DevScanParameters')
+        full_list = request.session.get('full_list')
+
+        try:
+            s_ip, s_comm, s_pass, s_maker = devscan_parameters
+        except:
+            return HttpResponse('oh shit... view "rec_search" failed.')
+
         for s_ip in dev_list:
             if s_ip != '0.0.0.0':
                 try:
-                    # device[0] -> Device IP address list
-                    # device[1] -> Table heading list
-                    # device[2] -> List of DevScan() results 
-                    device = [[s_ip, None, None, None ]]
-                    device.append(['Device IP Address', 'Device Name', 'Local Interface', 'Remote interface'])
-                    device.append(DevScan(s_ip))
-                    resp.append(device)
+                    devscan = [DevScan(s_ip)]
+                    full_list.append(list([s_ip]) + list(devscan))
                 except:
-                    resp.append([('Device', s_ip, 'failed', 'miserably')])
+                    full_list.append([(s_ip, 'Device', 'failed', 'miserably')])
     else:
         return render(request, 'scan.html', {'form': SwitchForm()})
     #return HttpResponse(devices)
-    request.session['full_list'] = resp
-    return render(request, 'answer.html', {'dev_list': dev_list, 'devices': resp})
+    #request.session['full_list'] = resp
+    return render(request, 'answer.html', {'dev_list': dev_list, 'devscan': full_list})
 
 def mapify(request):
     try:
         data = request.session.get('full_list')
+        return data
         try:
             for i in data:
                 for j in i:
@@ -123,13 +124,17 @@ def jsonify(data):
                     dev += '"device" : { '
                 elif len(j) == 4 and j[0] == 'device_ip':
                     name1, name2, name3, name4 = j
-                elif len(j) > 1:
-                    try:
-                        temp = socket.inet_aton(j[0])
-                        for k in j:
-                            dev += '"' + name1 + '" : "' + k[0] + '" } '
-                    except:
-                        pass
+                elif len(j) > 0:
+                    for k in j:
+                        try:
+                            temp = socket.inet_aton(k[0])
+                            #return ( 'temp is ' + str(temp))
+                            for l in range(0, len(k)-1):
+                                name = 'name' + l
+                                dev += '"' + name + '" : "' + l + '" } '
+                        except:
+                            pass
+                            #return 'no pass'
     except:
         jdata = 'The error is... ' + str(data[0])
     
@@ -141,3 +146,4 @@ def jsonify(data):
     #return render(request, 'mapify.html', {'jdata': jsondata, 'x': x})
 
     return jdata
+    #return 'Reached the end!!!'
