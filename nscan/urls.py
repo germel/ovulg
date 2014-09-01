@@ -5,5 +5,4 @@ urlpatterns = patterns('',
     url(r'^$', views.scan, name='scan'),
     url(r'^recursive-scan/$', views.rec_search, name='rec_search'),
     url(r'^mapify/$', views.mapify, name='mapify'),
-    url(r'^my/$', views.myjson, name='myjson'),
 )

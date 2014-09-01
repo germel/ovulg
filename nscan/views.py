@@ -71,79 +71,35 @@ def rec_search(request): # Recursive search in the results of the first pass
     else:
         return render(request, 'scan.html', {'form': SwitchForm()})
     #return HttpResponse(devices)
-    #request.session['full_list'] = resp
+    request.session['full_list'] = full_list
     return render(request, 'answer.html', {'dev_list': dev_list, 'devscan': full_list})
 
 def mapify(request):
     try:
         data = request.session.get('full_list')
-        return data
         try:
-            for i in data:
-                for j in i:
-                    if j[1] == None and j[3] == None:
-                        j[0] = 'device'
-                    elif j[0] == 'Device IP Address' and j[3] == 'Remote interface':
-                        j[0] = 'device_ip'
-                        j[1] = 'device_name'
-                        j[2] = 'local_if'
-                        j[3] = 'remote_if'
-                jsondata = jsonify(data)
+            jsondata = jsonify(data)
         except:
             #jsondata = 'We fucked up, mate...'
-            jsondata = sys.exc_info()[0]
+            jsondata = sys.exc_info()
     except:
-        return render(request, 'mapify.html', {'jsondata': jsondata})
-
-    # x is a test for d3js and can be discarded.
-    x='''<script type="text/javascript"> 
-        var rectDemo = d3.select("#rect-demo")
-            .append("svg:svg")
-            .attr("width", 400)
-            .attr("height", 300);
-        rectDemo.append("svg:rect")
-            .attr("x", 100)
-            .attr("y", 100)
-            .attr("height", 100)
-            .attr("width", 200);
-        </script>'''
+        jsondata += 'No jsondata'
 
     return render(request, 'mapify.html', {'jsondata': jsondata})
 
-def myjson(request):
-    import corestuff.myjson
-    return HttpResponse(data)
-
 def jsonify(data):
-    dev = '{ '
-
+    dev = '{"devices":['
     try:
         for i in data:
-            for j in i:
-                if len(j) == 4 and j[0] == 'device':
-                    dev += '"device" : { '
-                elif len(j) == 4 and j[0] == 'device_ip':
-                    name1, name2, name3, name4 = j
-                elif len(j) > 0:
-                    for k in j:
-                        try:
-                            temp = socket.inet_aton(k[0])
-                            #return ( 'temp is ' + str(temp))
-                            for l in range(0, len(k)-1):
-                                name = 'name' + l
-                                dev += '"' + name + '" : "' + l + '" } '
-                        except:
-                            pass
-                            #return 'no pass'
+            dev += '{"device":"' + str(i[0]) + '","neighbors":['
+            for j in i[1]:
+                dev += '{"device_ip":"' + str(j[0]) + '","device_name":"' + j[1] + '","local_if":"' + str(j[2]) + '","remote_if":"' + str(j[3]) + '"},'
+            dev += ']},'
     except:
         jdata = 'The error is... ' + str(data[0])
     
-    dev += ' }'
-    
-    jdata = dev
-
-    #return HttpResponse(data)
-    #return render(request, 'mapify.html', {'jdata': jsondata, 'x': x})
+    dev += ']}'
+    jdata = dev.replace('},]', '}]').replace('},}', '}}')
 
     return jdata
     #return 'Reached the end!!!'

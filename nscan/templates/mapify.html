@@ -3,15 +3,15 @@
 {% block head %}
 
 <script src="/static/js/d3/d3.min.js"></script>
-{# <script type="text/javascript" src="/static/js/myd3visscr.js"></script> #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/myd3visscr.js"></script>
 
 {% endblock head %}
 
 
 {% block body %}
 
-<div id="rect-demo">
-	<svg width="400" height="300"></svg>
+<div id="devmap">
+	{# <svg width="400" height="300"></svg> #}
 </div>
 
 <div id="jsondata">
