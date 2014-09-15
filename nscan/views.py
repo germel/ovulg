@@ -83,7 +83,10 @@ def mapify(request):
             #jsondata = 'We fucked up, mate...'
             jsondata = sys.exc_info()
     except:
-        jsondata += 'No jsondata'
+        try:
+            jsondata += 'No jsondata'
+        except:
+            jsondata = 'I have no data to display.'
 
     return render(request, 'mapify.html', {'jsondata': jsondata})
 
