@@ -75,6 +75,9 @@ def rec_search(request): # Recursive search in the results of the first pass
     return render(request, 'answer.html', {'dev_list': dev_list, 'devscan': full_list})
 
 def mapify(request):
+    if 'devs' in request.path[-5:] and request.session['jsondata']:
+        return HttpResponse(request.session['jsondata'])
+
     try:
         data = request.session.get('full_list')
         try:
@@ -88,7 +91,9 @@ def mapify(request):
         except:
             jsondata = 'I have no data to display.'
 
-    return render(request, 'mapify.html', {'jsondata': jsondata})
+    request.session['jsondata'] = jsondata
+    #return render(request, 'mapify.html', {'jsondata': jsondata})
+    return render(request, 'mapify.html')
 
 def jsonify(data):
     dev = '{"devices":['
