@@ -7,6 +7,7 @@ from django.core import serializers
 from nscan.forms import SwitchForm # The form to fill in the switch data
 from corestuff.core import DevScan
 import socket # jsonify must be able to test a field
+import json
 
 # Create your views here.
 
@@ -75,10 +76,10 @@ def rec_search(request): # Recursive search in the results of the first pass
     return render(request, 'answer.html', {'dev_list': dev_list, 'devscan': full_list})
 
 def mapify(request):
-    if 'devs' in request.path[-5:] and request.session['jsondata']:
+    if 'devs' in request.path[-5:] and request.session['full_list']:
         #xx='{ "nodes": [ { "id": "n0", "label": "A node", "x": 0, "y": 0, "size": 3 }, { "id": "n1", "label": "Another node", "x": 3, "y": 1, "size": 2 }, { "id": "n2", "label": "And a last one", "x": 1, "y": 3, "size": 1 } ], "edges": [ { "id": "e0", "source": "n0", "target": "n1" }, { "id": "e1", "source": "n1", "target": "n2" }, { "id": "e2", "source": "n2", "target": "n0" } ] }'
         #return HttpResponse(request.session['jsondata'])
-        return HttpResponse(sigmafy(request.session['jsondata']))
+        return HttpResponse(sigmafy(request.session['full_list']))
 
     try:
         data = request.session.get('full_list')
@@ -114,9 +115,26 @@ def jsonify(data):
     return jdata
     #return 'Reached the end!!!'
 
-def sigmafy(data):
-    sdata = data
-    sdata = sdata.replace('"devices"', '"nodes"').replace('"device"', '"label"')
+def sigmafy(data, x=0, y=0):
+    try: mynodes
+    except: mynodes = {'nodes': []}
+    t = 0
+    for i in data:
+        if x != 0 : x += 1
+        if type(i[1]) == list:
+            x = x + len(i[1]) / 2
+        mynodes['nodes'].append({"id" : 'n' + str(t), "label": i[0], "x": x, "y": y, "size": 3})
+        t += 1
+        if type(i[1]) == list:
+            for j in i[1]:
+                y += 1
+                mynodes['nodes'].append({"id" : 'n' + str(t), "label": j[0], "x": x, "y": y, "size": 2})
+                t += 1
+        else:
+            continue
+    sdata = json.dumps(mynodes)
+    
+    #sdata = sdata.replace('"devices"', '"nodes"').replace('"device"', '"label"')
     #sdata = sdata.replace('"label":"172.16.40.1"', '"label":"172.16.40.1","id":"n0","size":10,"x":1,"y":1')
     #sdata = '{"nodes": [{"label":"172.16.40.1","id":"n0","size":"6","x":"1","y":"1"}]}'
     #sdata = '{ "nodes": [ { "id": "n0", "label": "A node", "x": 0, "y": 0, "size": 3 }, { "id": "n1", "label": "Another node", "x": 3, "y": 1, "size": 2 }, { "id": "n2", "label": "And a last one", "x": 1, "y": 3, "size": 1 } ], "edges": [ { "id": "e0", "source": "n0", "target": "n1" }, { "id": "e1", "source": "n1", "target": "n2" }, { "id": "e2", "source": "n2", "target": "n0" } ] }'
