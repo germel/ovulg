@@ -117,19 +117,28 @@ def jsonify(data):
 
 def sigmafy(data, x=0, y=0):
     try: mynodes
-    except: mynodes = {'nodes': []}
+    except: mynodes = {'nodes': [], 'edges': []}
     t = 0
+    tsls, tslt = [], []
     for i in data:
+        if i[0] in tsls: continue
         if x != 0 : x += 1
         if type(i[1]) == list:
-            x = x + len(i[1]) / 2
-        mynodes['nodes'].append({"id" : 'n' + str(t), "label": i[0], "x": x, "y": y, "size": 3})
+            c = x + len(i[1]) / 2
+        idSource = 'n' + str(t)
+        label = i[0]
+        mynodes['nodes'].append({"id" : idSource, "label": label, "x": c, "y": y, "size": 3})
         t += 1
+        tsls.append(label)
         if type(i[1]) == list:
+            y += 1
             for j in i[1]:
-                y += 1
-                mynodes['nodes'].append({"id" : 'n' + str(t), "label": j[0], "x": x, "y": y, "size": 2})
+                if j[0] in tslt: continue
+                mynodes['nodes'].append({"id": 'n' + str(t), "label": j[0], "x": x, "y": y, "size": 2})
+                mynodes['edges'].append({"id": 'e' + str(t), "source": idSource, "target": 'n' + str(t)})
                 t += 1
+                x += 1
+                tslt.append(j[0])
         else:
             continue
     sdata = json.dumps(mynodes)
