@@ -7,6 +7,7 @@ from django.core import serializers
 from nscan.forms import SwitchForm # The form to fill in the switch data
 from corestuff.core import DevScan
 import socket # jsonify must be able to test a field
+import json # After all we will be parsing JSON strings
 
 # Create your views here.
 
@@ -75,10 +76,11 @@ def rec_search(request): # Recursive search in the results of the first pass
     return render(request, 'answer.html', {'dev_list': dev_list, 'devscan': full_list})
 
 def mapify(request):
-    if 'devs' in request.path[-5:] and request.session['jsondata']:
+    #if 'devs' in request.path[-5:] and request.session['jsondata']:
+    if 'devs' in request.path[-5:] and request.session['full_list']:
         #xx='{ "nodes": [ { "id": "n0", "label": "A node", "x": 0, "y": 0, "size": 3 }, { "id": "n1", "label": "Another node", "x": 3, "y": 1, "size": 2 }, { "id": "n2", "label": "And a last one", "x": 1, "y": 3, "size": 1 } ], "edges": [ { "id": "e0", "source": "n0", "target": "n1" }, { "id": "e1", "source": "n1", "target": "n2" }, { "id": "e2", "source": "n2", "target": "n0" } ] }'
-        #return HttpResponse(request.session['jsondata'])
-        return HttpResponse(sigmafy(request.session['jsondata']))
+        #return HttpResponse(jsondata)
+        return HttpResponse(sigmafy(request.session['full_list']))
 
     try:
         data = request.session.get('full_list')
@@ -98,10 +100,11 @@ def mapify(request):
     return render(request, 'mapify.html')
 
 def jsonify(data):
-    dev = '{"devices":['
+    dev = '{"nodes":['
     try:
+        idx = 0
         for i in data:
-            dev += '{"device":"' + str(i[0]) + '","neighbors":['
+            dev += '{"device_ip":"' + str(i[0]) + '","neighbors":['
             for j in i[1]:
                 dev += '{"device_ip":"' + str(j[0]) + '","device_name":"' + j[1] + '","local_if":"' + str(j[2]) + '","remote_if":"' + str(j[3]) + '"},'
             dev += ']},'
@@ -110,14 +113,36 @@ def jsonify(data):
     
     dev += ']}'
     jdata = dev.replace('},]', '}]').replace('},}', '}}')
+    print(jdata)
 
     return jdata
     #return 'Reached the end!!!'
 
 def sigmafy(data):
+    #sdata = json.loads(data)
     sdata = data
-    sdata = sdata.replace('"devices"', '"nodes"').replace('"device"', '"label"')
+    print(sdata)
+    for i in range(len(sdata)):
+        if type(sdata[i]) == list:
+            print(sdata[i])
+            print('\n')
+    #sdata = sdata.replace('"devices"', '"nodes"').replace('"device"', '"label"')
     #sdata = sdata.replace('"label":"172.16.40.1"', '"label":"172.16.40.1","id":"n0","size":10,"x":1,"y":1')
     #sdata = '{"nodes": [{"label":"172.16.40.1","id":"n0","size":"6","x":"1","y":"1"}]}'
     #sdata = '{ "nodes": [ { "id": "n0", "label": "A node", "x": 0, "y": 0, "size": 3 }, { "id": "n1", "label": "Another node", "x": 3, "y": 1, "size": 2 }, { "id": "n2", "label": "And a last one", "x": 1, "y": 3, "size": 1 } ], "edges": [ { "id": "e0", "source": "n0", "target": "n1" }, { "id": "e1", "source": "n1", "target": "n2" }, { "id": "e2", "source": "n2", "target": "n0" } ] }'
-    return data
+    """sdata = '{ "nodes": [ { "id": "n0", "label": "Switch 1", "x": 3, "y": 0, "size": 3 },\
+             { "id": "n1", "label": "Switch 2", "x": 0, "y": 1, "size": 2 },\
+             { "id": "n2", "label": "Switch 3", "x": 1, "y": 1, "size": 2 },\
+             { "id": "n3", "label": "Switch 4", "x": 2, "y": 1, "size": 2 },\
+             { "id": "n4", "label": "Switch 5", "x": 3, "y": 1, "size": 2 },\
+             { "id": "n5", "label": "Switch 6", "x": 4, "y": 1, "size": 2 },\
+             { "id": "n6", "label": "Switch 7", "x": 5, "y": 1, "size": 2 },\
+             { "id": "n7", "label": "Switch 8", "x": 6, "y": 1, "size": 2 } ],\
+              "edges": [ { "id": "e0", "source": "n0", "target": "n1" },\
+             { "id": "e1", "source": "n0", "target": "n2" },\
+             { "id": "e2", "source": "n0", "target": "n3" },\
+             { "id": "e3", "source": "n0", "target": "n4" },\
+             { "id": "e4", "source": "n0", "target": "n5" },\
+             { "id": "e5", "source": "n0", "target": "n6" },\
+             { "id": "e7", "source": "n0", "target": "n7" } ] }' """
+    return sdata
