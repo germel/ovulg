@@ -7,11 +7,12 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/mysigma.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/sigmajs/sigma.min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/sigmajs/plugins/sigma.parsers.json.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/sigmajs/plugins/sigma.plugins.dragNodes.min.js"></script>
 
 <style type="text/css">
   #sigma-container {
-    max-width: 800px;
-    height: 600px;
+    max-width: 1000px;
+    height: 650px;
     margin: auto;
   }
 </style>
@@ -25,6 +26,7 @@
 </div>
 
 <div id="sigma-container"> </div>
+
 
 <div id="jsondata">{% autoescape off %}{{ jsondata }}{% endautoescape %}</div>
 
