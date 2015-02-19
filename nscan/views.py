@@ -121,7 +121,7 @@ def sigmafy(data, x=0, y=0):
     except: mynodes = {'nodes': [], 'edges': []}
     t = 0   # a variable to enumerate the id's for sigma.js
     tsls, tslt = [], [] # source and target lists of switches
-    zuk = [] # a temp list to store ip couples of interconnected switches
+    zuk = [] # a temp list to store ip pairs of interconnected switches
     c = 0
     for i in data:
         #if i[0] in tsls: continue
@@ -134,13 +134,15 @@ def sigmafy(data, x=0, y=0):
         #mynodes['nodes'].append({"id" : idSource, "label": label, "x": c, "y": y, "size": 3}) #linear
         if len(zuk) > 1:
             for k in zuk:
+                print("label and k in zuk are %s, %s" % (label, k))
                 if label in k:
-                    print("%s, %s\n" % (label, k))
+                    print("FOUND source in list -> %s, %s" % (label, k))
                 else:
-                    print("label not in zuk, continueing\n")
+                    print("label not in zuk, append node %s, -> %s, t=%d" % (idSource, label, t))
                     mynodes['nodes'].append({"id" : idSource, "label": label, "x": c, "y": y, "size": 3}) #circular
+                    break
         else:
-            print("FIRST label in zuk, continueing\n")
+            print("FIRST label in zuk, continuing")
             mynodes['nodes'].append({"id" : idSource, "label": label, "x": c, "y": y, "size": 3}) #circular
         t += 1
         tsls.append(label)
@@ -150,7 +152,7 @@ def sigmafy(data, x=0, y=0):
             for j in i[1]:
                 #if j[0] in tslt: continue   # if there are two links between two switches, draw only one
                 if (i[0], j[0]) in zuk or (j[0], i[0]) in zuk:
-                    print('found couple [%s, %s]' % (i[0], j[0]))
+                    print('Stumbled on existing couple [%s, %s], node %s' % (i[0], j[0], 'n'+str(t)))
                     continue 
                 x = c + math.cos(z * p)
                 y =     math.sin(z * p)
@@ -161,7 +163,7 @@ def sigmafy(data, x=0, y=0):
                 z += 1
                 #x += 1
                 zuk.append((i[0], j[0]))
-                print('Couple not found, append [%s, %s]' % (i[0], j[0]))
+                print('Couple not found, append [%s, %s] as node %s' % (i[0], j[0], 'n'+str(t)))
                 tslt.append(j[0])
             c += 2
         else:
